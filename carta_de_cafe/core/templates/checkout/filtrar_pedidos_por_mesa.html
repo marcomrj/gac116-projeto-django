@@ -1,0 +1,92 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtrar Pedidos por Mesa</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/filtrar_pedidos_por_mesa.css' %}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Filtrar Pedidos Ativos por Mesa</h1>
+        
+        <form method="get" class="form-inline mb-4">
+            <label for="mesa" class="mr-2">Mesa:</label>
+            <input type="number" id="mesa" name="mesa" class="form-control mr-2" value="{{ mesa }}">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </form>
+
+        {% if pedidos %}
+        <table class="table table-bordered mb-4">
+            <thead>
+                <tr>
+                    <th>ID do Pedido</th>
+                    <th>Mesa</th>
+                    <th>Ativo</th>
+                    <th>Criado em</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in pedidos %}
+                <tr>
+                    <td>{{ pedido.id }}</td>
+                    <td>{{ pedido.mesa }}</td>
+                    <td>{{ pedido.ativo }}</td>
+                    <td>{{ pedido.created_at }}</td>
+                    <td>
+                        <form method="post" action="{% url 'filtrar_pedidos_por_mesa' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="pedido_id" value="{{ pedido.id }}">
+                            <button type="submit" class="btn btn-danger">Confirmar pagamento</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Detalhes dos Pedidos</h2>
+        {% for pedido_id, itens in detalhes_pedidos.items %}
+        <h3>Pedido ID: {{ pedido_id }}</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Status</th>
+                    <th>Preço</th>
+                    <th>Imagem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens %}
+                <tr>
+                    <td>{{ item.produtoId.nome }}</td>
+                    <td>{{ item.status }}</td>
+                    <td>R$ {{ item.produtoId.preco }}</td>  <!-- Mostrando preço do produto -->
+                    <td>
+                        <img src="{{ item.produtoId.imagem.url }}" alt="{{ item.produtoId.nome }}" style="width: 100px;">
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Nenhum item encontrado para este pedido.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+
+        {% else %}
+        <p>Nenhum pedido encontrado para a mesa especificada.</p>
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

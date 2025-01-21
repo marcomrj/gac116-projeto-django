@@ -1,0 +1,52 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos Ativos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/listar_pedidos_ativos.css' %}">
+</head>
+
+<body>
+    <h1>Meus Pedidos Ativos</h1>
+
+    {% if pedidos_ativos %}
+            <ul>
+                {% for pedido in pedidos_ativos %}
+                <div class="container">
+                    <li>
+                        <h2>Pedido ID: {{ pedido.id }}
+                        </h2><hr>
+                        <p>Mesa: {{ pedido.mesa }}</p>
+                        <p>Data do Pedido: {{ pedido.created_at }}</p>
+                        <ul>
+                            {% for item in pedido.pedidoproduto_set.all %}
+                            <li>
+                                Produto: {{ item.produtoId.nome }}<br>
+                                Quantidade: {{ item.quantidade }}<br>
+                                Status: {{ item.get_status_display }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </div>
+                
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% else %}
+    <div id="exception" class="d-flex justify-content-center">
+        <p>Você não tem nenhum pedido ativo no momento.</p>
+    </div>
+    {% endif %}
+
+    <a href="{% url 'listar_produtos' %}" class="btn btn-secondary">Voltar a Carta de Cafés</a>
+
+</body>
+
+</html>

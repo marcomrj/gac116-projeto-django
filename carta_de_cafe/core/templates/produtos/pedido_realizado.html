@@ -1,0 +1,25 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/pedido.css' %}">
+    <title>Pedido Realizado</title>
+</head>
+<body>
+    <div class="container text-center">
+        <li class="list-unstyled">
+            <h1>Pedido Realizado com Sucesso!
+            </h1>
+            <hr>
+            <ul class="list-unstyled">
+                <p>O número do seu pedido é: {{ pedido_id }}</p>
+                <a href="{% url 'listar_produtos' %}" class="btn btn-primary">Voltar a Carta de Cafés</a>
+            </ul>
+        </li>
+    </div>
+</body>
+</html>

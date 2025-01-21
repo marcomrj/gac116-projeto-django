@@ -1,0 +1,53 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta de Cafés</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/listar_produtos.css' %}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Carta de Cafés</h1>
+        <div class="row">
+            {% for produto in produtos %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ produto.imagem.url }}" class="card-img-top" alt="{{ produto.nome }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ produto.nome }}</h5>
+                        <p class="card-text">{{ produto.descricao }}</p>
+                        <p class="card-text"><strong>Preço:</strong> R$ {{ produto.preco }}</p>
+                        <form action="{% url 'adicionar_ao_carrinho' produto.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Adicionar aos Pedidos</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <br><br><br>
+
+    <!-- Rodapé -->
+    <footer class="bg-primary text-white text-center">
+        <div class="container">
+            <a href="{% url 'ver_carrinho' %}" class="btn btn-light mx-2">
+                Finalizar Pedido 
+                {% if carrinho_count > 0 %}
+                    <span class="badge badge-danger">{{ carrinho_count }}</span>
+                {% endif %}
+            </a>
+            <a href="{% url 'listar_pedidos_ativos' %}" class="btn btn-light mx-2">Ver Meus Pedidos Ativos</a>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

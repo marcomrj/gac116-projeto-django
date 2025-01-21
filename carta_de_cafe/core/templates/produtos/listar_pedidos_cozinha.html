@@ -1,0 +1,64 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos Cozinha</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .img-thumbnail {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Pedidos</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Mesa</th>
+                    <th>Produto</th>
+                    <th>Imagem</th>
+                    <th>Status</th>
+                    <th>Tempo Decorrido (minutos)</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido_produto in pedidos_produto %}
+                <tr>
+                    <td>{{ pedido_produto.pedidoId.mesa }}</td>
+                    <td>{{ pedido_produto.produtoId.nome }}</td>
+                    <td><img src="{{ pedido_produto.produtoId.imagem.url }}" alt="{{ pedido_produto.produtoId.nome }}" class="img-thumbnail"></td>
+                    <td>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="pedido_produto_id" value="{{ pedido_produto.id }}">
+                            <select name="status" class="form-control">
+                                {% for key, value in pedido_produto.StatusPedidos.choices %}
+                                    <option value="{{ key }}" {% if pedido_produto.status == key %}selected{% endif %}>
+                                        {{ value }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                    </td>
+                    <td>{{ pedido_produto.tempo_decorrido }}</td>
+                    <td>
+                            <button type="submit" class="btn btn-primary">Atualizar Status</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
