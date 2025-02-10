@@ -12,19 +12,15 @@ def login(request):
         
 
         request.session['mesa'] = mesa
-        # Verifica se o cliente já existe pelo CPF
         cliente = Cliente.objects.filter(cpf=cpf).first()
 
         if cliente:
-            # Se o cliente já existe, salva o ID na sessão
             request.session['cliente_id'] = cliente.id
         else:
-            # Se o cliente não existe, cria um novo e salva no banco de dados
             cliente = Cliente.objects.create(nome=nome, cpf=cpf)
             request.session['cliente_id'] = cliente.id
 
         request.session['carrinho'] = {}
-        # Redireciona para a página de produtos ou outra página
         return redirect('listar_produtos')
 
     return render(request, 'produtos/login.html')
@@ -45,10 +41,8 @@ def adicionar_ao_carrinho(request, produto_id):
 
     
     if str(produto_id) in carrinho:
-        # Se o produto já estiver no carrinho, incrementa a quantidade
         carrinho[str(produto_id)] += 1
     else:
-        # Se o produto não estiver no carrinho, adiciona com quantidade 1
         carrinho[str(produto_id)] = 1
     print(carrinho)
     request.session['carrinho'] = carrinho
@@ -77,22 +71,17 @@ def ver_carrinho(request):
 def realizar_pedido(request):
     cliente_id = request.session.get('cliente_id')
     if not cliente_id:
-        return redirect('login')  # Redireciona para login se o cliente não estiver autenticado
-
+        return redirect('login')
 
     cliente = Cliente.objects.get(id=cliente_id)
     
     if request.method == 'POST':
         print('teste')
-        mesa = request.session['mesa']  # Supondo que o número da mesa seja fornecido
-
-        # Cria o pedido e salva no banco de dados
+        mesa = request.session['mesa']
         pedido = Pedido.objects.create(clienteId=cliente, mesa=mesa, ativo=True)
 
-        # Recupera o carrinho da sessão
         carrinho = request.session.get('carrinho', {})
 
-        # Cria registros em PedidoProduto para cada item no carrinho
 
         for key, value in carrinho.items():
             print(carrinho)
@@ -104,9 +93,8 @@ def realizar_pedido(request):
                     status=PedidoProduto.StatusPedidos.PEDIDO_REALIZADO
                 )
 
-        # Limpa o carrinho após realizar o pedido
-        request.session['carrinho'] = {}  # Limpa o carrinho após realizar o pedido
-        return redirect('pedido_realizado', pedido_id=pedido.id)  # Redireciona para uma página de confirmação
+        request.session['carrinho'] = {}
+        return redirect('pedido_realizado', pedido_id=pedido.id)
 
     return render(request, 'produtos/ver_carrinho.html')
 
@@ -116,7 +104,7 @@ def pedido_realizado(request, pedido_id):
 def listar_pedidos_ativos(request):
     cliente_id = request.session.get('cliente_id')
     if not cliente_id:
-        return redirect('login')  # Redireciona para login se o cliente não estiver autenticado
+        return redirect('login')
 
     pedidos_ativos = Pedido.objects.filter(clienteId=cliente_id, ativo=True).prefetch_related('pedidoproduto_set')
     
@@ -130,7 +118,7 @@ def listar_pedidos_barista(request):
     
     for pedido_produto in pedidos_produto:
         delta = timezone.now() - pedido_produto.created_at
-        pedido_produto.tempo_decorrido = int(delta.total_seconds() // 60)  # Tempo em minutos
+        pedido_produto.tempo_decorrido = int(delta.total_seconds() // 60)
 
     if request.method == 'POST':
         pedido_produto_id = request.POST.get('pedido_produto_id')
